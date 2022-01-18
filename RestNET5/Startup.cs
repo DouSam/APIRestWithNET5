@@ -29,6 +29,8 @@ namespace RestNET5
 
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
 
+            services.AddApiVersioning();
+
             services.AddScoped<IPersonService, PersonServiceImplementation>();
         }
 
