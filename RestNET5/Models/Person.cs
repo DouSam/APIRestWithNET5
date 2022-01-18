@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RestNET5.Models
+﻿namespace RestNET5.Models
 {
     public class Person
     {

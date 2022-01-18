@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RestNET5.Services;
+using RestNET5.Services.Implementations;
 
 namespace RestNET5
 {
@@ -20,6 +22,8 @@ namespace RestNET5
         {
 
             services.AddControllers();
+
+            services.AddScoped<IPersonService, PersonServiceImplementation>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
