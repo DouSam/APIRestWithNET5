@@ -1,55 +1,88 @@
 ﻿using RestNET5.Models;
+using RestNET5.Models.Context;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RestNET5.Services.Implementations
 {
     public class PersonServiceImplementation : IPersonService
     {
-        public List<Person> FindAll()
+        private readonly AppDbContext _context;
+        public PersonServiceImplementation(AppDbContext context)
         {
-            List<Person> people = new List<Person>();
-            for (int i = 0; i < 8; i++)
-            {
-                Person person = MockPerson(i);
-                people.Add(person);
-            }
-            return people;
+            _context = context;
         }
 
-        private static Person MockPerson(int i) => new Person
+        public List<Person> FindAll()
         {
-            Id = i,
-            Name = "Douglas " + i,
-            LastName = "Samuel",
-            Address = "Claudio rua",
-            Gender = "Male"
-        };
+            return _context.People.ToList();
+        }
+
+        public Person FindByID(long id)
+        {
+            return _context.People.SingleOrDefault(p => p.Id.Equals(id));
+        }
 
         public Person Create(Person person)
         {
-            return person;
-        }
-
-        public void Delete(double id)
-        {
-
-        }
-
-        public Person FindByID(double id)
-        {
-            return new Person
+            try
             {
-                Id = 1,
-                Name = "Douglas",
-                LastName = "Samuel",
-                Address = "Claudio rua",
-                Gender = "Male"
-            };
+                _context.Add(person);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return person;
         }
 
         public Person Update(Person person)
         {
+            if (!Exists(person.Id))
+                return new Person();
+
+            var result = _context.People.SingleOrDefault(p => p.Id.Equals(person.Id));
+            if (result != null)
+            {
+                try
+                {
+                    _context.Entry(result).CurrentValues.SetValues(person);
+                    _context.SaveChanges();
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
             return person;
+        }
+
+        public void Delete(long id)
+        {
+            var result = _context.People.SingleOrDefault(p => p.Id.Equals(id));
+
+            if (result != null)
+            {
+                try
+                {
+                    _context.People.Remove(result);
+                    _context.SaveChanges();
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+        }
+
+        private bool Exists(long id)
+        {
+            return _context.People.Any(p => p.Id.Equals(id));
         }
     }
 }

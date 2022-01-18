@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RestNET5.Models.Context;
 using RestNET5.Services;
 using RestNET5.Services.Implementations;
 
@@ -22,6 +24,10 @@ namespace RestNET5
         {
 
             services.AddControllers();
+
+            var connection = Configuration["ConnectionStrings:DefaultConnection"];
+
+            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
 
             services.AddScoped<IPersonService, PersonServiceImplementation>();
         }

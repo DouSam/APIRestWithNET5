@@ -26,7 +26,7 @@ namespace RestNET5.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(double id)
+        public IActionResult Get(long id)
         {
             Person person = _personService.FindByID(id);
 
@@ -57,7 +57,7 @@ namespace RestNET5.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(double id)
+        public IActionResult Delete(long id)
         {
             _personService.Delete(id);
             return NoContent();
