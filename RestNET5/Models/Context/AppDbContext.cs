@@ -17,5 +17,6 @@ namespace RestNET5.Models.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<Person>().Property(b => b.Id).UseIdentityAlwaysColumn();
 
         public DbSet<Person> People { get; set; }
+        public DbSet<Book> Books { get; set; }
     }
 }
