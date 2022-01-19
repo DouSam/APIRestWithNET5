@@ -3,13 +3,15 @@ using RestNET5.Models.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace RestNET5.Services.Implementations
+namespace RestNET5.Repository.Implementations
 {
-    public class PersonServiceImplementation : IPersonService
+    public class PersonRepository : IPersonRepository
     {
-        private readonly AppDbContext _context;
-        public PersonServiceImplementation(AppDbContext context)
+        private AppDbContext _context;
+
+        public PersonRepository(AppDbContext context)
         {
             _context = context;
         }
@@ -33,7 +35,6 @@ namespace RestNET5.Services.Implementations
             }
             catch (Exception)
             {
-
                 throw;
             }
             return person;
@@ -41,8 +42,7 @@ namespace RestNET5.Services.Implementations
 
         public Person Update(Person person)
         {
-            if (!Exists(person.Id))
-                return new Person();
+            if (!Exists(person.Id)) return new Person();
 
             var result = _context.People.SingleOrDefault(p => p.Id.Equals(person.Id));
             if (result != null)
@@ -54,7 +54,6 @@ namespace RestNET5.Services.Implementations
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
             }
@@ -64,7 +63,6 @@ namespace RestNET5.Services.Implementations
         public void Delete(long id)
         {
             var result = _context.People.SingleOrDefault(p => p.Id.Equals(id));
-
             if (result != null)
             {
                 try
@@ -74,13 +72,11 @@ namespace RestNET5.Services.Implementations
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
             }
         }
-
-        private bool Exists(long id)
+        public bool Exists(long id)
         {
             return _context.People.Any(p => p.Id.Equals(id));
         }

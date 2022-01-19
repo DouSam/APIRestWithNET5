@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RestNET5.Business;
 using RestNET5.Models;
-using RestNET5.Services;
 
 namespace RestNET5.Controllers
 {
@@ -12,24 +12,24 @@ namespace RestNET5.Controllers
     {
 
         private readonly ILogger<PersonController> _logger;
-        private readonly IPersonService _personService;
+        private readonly IPersonBusiness _personBusiness;
 
-        public PersonController(ILogger<PersonController> logger, IPersonService personService)
+        public PersonController(ILogger<PersonController> logger, IPersonBusiness personService)
         {
             _logger = logger;
-            _personService = personService;
+            _personBusiness = personService;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_personService.FindAll());
+            return Ok(_personBusiness.FindAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(long id)
         {
-            Person person = _personService.FindByID(id);
+            Person person = _personBusiness.FindByID(id);
 
             if (person == null)
                 return NotFound();
@@ -44,7 +44,7 @@ namespace RestNET5.Controllers
             if (person == null)
                 return BadRequest();
 
-            return Ok(_personService.Create(person));
+            return Ok(_personBusiness.Create(person));
         }
 
         [HttpPut]
@@ -54,13 +54,13 @@ namespace RestNET5.Controllers
             if (person == null)
                 return BadRequest();
 
-            return Ok(_personService.Update(person));
+            return Ok(_personBusiness.Update(person));
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
-            _personService.Delete(id);
+            _personBusiness.Delete(id);
             return NoContent();
         }
     }

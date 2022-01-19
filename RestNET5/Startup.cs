@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RestNET5.Business;
+using RestNET5.Business.Implementations;
 using RestNET5.Models.Context;
-using RestNET5.Services;
-using RestNET5.Services.Implementations;
+using RestNET5.Repository;
+using RestNET5.Repository.Implementations;
 
 namespace RestNET5
 {
@@ -31,7 +33,8 @@ namespace RestNET5
 
             services.AddApiVersioning();
 
-            services.AddScoped<IPersonService, PersonServiceImplementation>();
+            services.AddScoped<IPersonBusiness, PersonBusiness>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
