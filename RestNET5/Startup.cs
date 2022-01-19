@@ -9,7 +9,7 @@ using RestNET5.Business;
 using RestNET5.Business.Implementations;
 using RestNET5.Models.Context;
 using RestNET5.Repository;
-using RestNET5.Repository.Implementations;
+using RestNET5.Repository.Generic;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -48,9 +48,9 @@ namespace RestNET5
             services.AddApiVersioning();
 
             services.AddScoped<IPersonBusiness, PersonBusiness>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IBookBusiness, BookBusiness>();
-            services.AddScoped<IBookRepository, BookRepository>();
+
+            services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

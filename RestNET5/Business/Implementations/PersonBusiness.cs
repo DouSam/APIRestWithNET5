@@ -9,8 +9,8 @@ namespace RestNET5.Business.Implementations
 {
     public class PersonBusiness : IPersonBusiness
     {
-        private readonly IPersonRepository _repository;
-        public PersonBusiness(IPersonRepository context)
+        private readonly IRepository<Person> _repository;
+        public PersonBusiness(IRepository<Person> context)
         {
             _repository = context;
         }

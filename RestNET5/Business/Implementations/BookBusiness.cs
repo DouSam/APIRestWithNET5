@@ -9,8 +9,8 @@ namespace RestNET5.Business.Implementations
 {
     public class BookBusiness : IBookBusiness
     {
-        private readonly IBookRepository _repository;
-        public BookBusiness(IBookRepository context)
+        private readonly IRepository<Book> _repository;
+        public BookBusiness(IRepository<Book> context)
         {
             _repository = context;
         }

@@ -1,73 +1,77 @@
-﻿using RestNET5.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RestNET5.Models.BaseModel;
 using RestNET5.Models.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace RestNET5.Repository.Implementations
+namespace RestNET5.Repository.Generic
 {
-    public class PersonRepository : IPersonRepository
+    public class GenericRepository<T> : IRepository<T> where T : BaseEntity
     {
         private AppDbContext _context;
 
-        public PersonRepository(AppDbContext context)
+        private DbSet<T> dataset;
+        public GenericRepository(AppDbContext context)
         {
             _context = context;
+            dataset = _context.Set<T>();
         }
 
-        public List<Person> FindAll()
+        public List<T> FindAll()
         {
-            return _context.People.ToList();
+            return dataset.ToList();
         }
 
-        public Person FindByID(long id)
+        public T FindByID(long id)
         {
-            return _context.People.SingleOrDefault(p => p.Id.Equals(id));
+            return dataset.SingleOrDefault(p => p.Id.Equals(id));
         }
 
-        public Person Create(Person person)
+        public T Create(T item)
         {
             try
             {
-                _context.Add(person);
+                dataset.Add(item);
                 _context.SaveChanges();
+                return item;
             }
             catch (Exception)
             {
                 throw;
             }
-            return person;
         }
 
-        public Person Update(Person person)
+        public T Update(T item)
         {
-            if (!Exists(person.Id)) return new Person();
-
-            var result = _context.People.SingleOrDefault(p => p.Id.Equals(person.Id));
+            var result = dataset.SingleOrDefault(p => p.Id.Equals(item.Id));
             if (result != null)
             {
                 try
                 {
-                    _context.Entry(result).CurrentValues.SetValues(person);
+                    _context.Entry(result).CurrentValues.SetValues(item);
                     _context.SaveChanges();
+                    return result;
                 }
                 catch (Exception)
                 {
                     throw;
                 }
             }
-            return person;
+            else
+            {
+                return null;
+            }
         }
 
         public void Delete(long id)
         {
-            var result = _context.People.SingleOrDefault(p => p.Id.Equals(id));
+            var result = dataset.SingleOrDefault(p => p.Id.Equals(id));
             if (result != null)
             {
                 try
                 {
-                    _context.People.Remove(result);
+                    dataset.Remove(result);
                     _context.SaveChanges();
                 }
                 catch (Exception)
@@ -76,9 +80,10 @@ namespace RestNET5.Repository.Implementations
                 }
             }
         }
+
         public bool Exists(long id)
         {
-            return _context.People.Any(p => p.Id.Equals(id));
+            return dataset.Any(p => p.Id.Equals(id));
         }
     }
 }
