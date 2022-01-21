@@ -8,6 +8,8 @@ using Microsoft.Net.Http.Headers;
 using Npgsql;
 using RestNET5.Business;
 using RestNET5.Business.Implementations;
+using RestNET5.Hypermedia.Enricher;
+using RestNET5.Hypermedia.Filters;
 using RestNET5.Models.Context;
 using RestNET5.Repository;
 using RestNET5.Repository.Generic;
@@ -52,6 +54,12 @@ namespace RestNET5
                 options.FormatterMappings.SetMediaTypeMappingForFormat("xml", MediaTypeHeaderValue.Parse("application/xml"));
                 options.FormatterMappings.SetMediaTypeMappingForFormat("json", MediaTypeHeaderValue.Parse("application/json"));
             }).AddXmlSerializerFormatters();
+
+            var filterOptions = new HyperMediaFilterOptions();
+            filterOptions.ContentResponseEnricherList.Add(new PersonEnricher());
+            filterOptions.ContentResponseEnricherList.Add(new BookEnricher());
+
+            services.AddSingleton(filterOptions);
 
             services.AddApiVersioning();
 

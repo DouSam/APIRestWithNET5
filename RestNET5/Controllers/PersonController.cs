@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using RestNET5.Business;
 using RestNET5.Data.VO;
+using RestNET5.Hypermedia.Filters;
 
 namespace RestNET5.Controllers
 {
@@ -21,12 +22,14 @@ namespace RestNET5.Controllers
         }
 
         [HttpGet]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get()
         {
             return Ok(_personBusiness.FindAll());
         }
 
         [HttpGet("{id}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get(long id)
         {
             PersonVO person = _personBusiness.FindByID(id);
@@ -38,6 +41,7 @@ namespace RestNET5.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Post([FromBody] PersonVO person)
         {
             if (person == null)
@@ -47,6 +51,7 @@ namespace RestNET5.Controllers
         }
 
         [HttpPut]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Put([FromBody] PersonVO person)
         {
 
