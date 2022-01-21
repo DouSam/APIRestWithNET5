@@ -1,38 +1,40 @@
-﻿using RestNET5.Models;
-using RestNET5.Models.Context;
+﻿using RestNET5.Data.Converter.Implementations;
+using RestNET5.Data.VO;
+using RestNET5.Models;
 using RestNET5.Repository;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RestNET5.Business.Implementations
 {
     public class PersonBusiness : IPersonBusiness
     {
         private readonly IRepository<Person> _repository;
+
+        private readonly PersonConverter _converter;
         public PersonBusiness(IRepository<Person> context)
         {
             _repository = context;
+            _converter = new PersonConverter();
         }
 
-        public List<Person> FindAll()
+        public List<PersonVO> FindAll()
         {
-            return _repository.FindAll();
+            return _converter.Parse(_repository.FindAll());
         }
 
-        public Person FindByID(long id)
+        public PersonVO FindByID(long id)
         {
-            return _repository.FindByID(id);
+            return _converter.Parse(_repository.FindByID(id));
         }
 
-        public Person Create(Person person)
+        public PersonVO Create(PersonVO person)
         {
-            return _repository.Create(person);
+            return _converter.Parse(_repository.Create(_converter.Parse(person)));
         }
 
-        public Person Update(Person person)
+        public PersonVO Update(PersonVO person)
         {
-            return _repository.Update(person);
+            return _converter.Parse(_repository.Update(_converter.Parse(person)));
         }
 
         public void Delete(long id)

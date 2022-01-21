@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RestNET5.Business;
-using RestNET5.Models;
+using RestNET5.Data.VO;
 
 namespace RestNET5.Controllers
 {
@@ -29,7 +29,7 @@ namespace RestNET5.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(long id)
         {
-            Person person = _personBusiness.FindByID(id);
+            PersonVO person = _personBusiness.FindByID(id);
 
             if (person == null)
                 return NotFound();
@@ -38,9 +38,8 @@ namespace RestNET5.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Person person)
+        public IActionResult Post([FromBody] PersonVO person)
         {
-
             if (person == null)
                 return BadRequest();
 
@@ -48,7 +47,7 @@ namespace RestNET5.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] Person person)
+        public IActionResult Put([FromBody] PersonVO person)
         {
 
             if (person == null)
