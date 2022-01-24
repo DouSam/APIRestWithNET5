@@ -9,7 +9,7 @@ namespace RestNET5.Repository.Generic
 {
     public class GenericRepository<T> : IRepository<T> where T : BaseEntity
     {
-        private AppDbContext _context;
+        protected AppDbContext _context;
 
         private DbSet<T> dataset;
         public GenericRepository(AppDbContext context)

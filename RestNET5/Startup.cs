@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -5,19 +7,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using RestNET5.Business;
 using RestNET5.Business.Implementations;
+using RestNET5.Configurations;
 using RestNET5.Hypermedia.Enricher;
 using RestNET5.Hypermedia.Filters;
 using RestNET5.Models.Context;
 using RestNET5.Repository;
 using RestNET5.Repository.Generic;
+using RestNET5.Services;
+using RestNET5.Services.Implementations;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace RestNET5
 {
@@ -38,6 +46,47 @@ namespace RestNET5
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var tokenConfigurations = new TokenConfiguration();
+
+            new ConfigureFromConfigurationOptions<TokenConfiguration>(
+                    Configuration.GetSection("TokenConfigurations")
+                )
+                .Configure(tokenConfigurations);
+
+            services.AddSingleton(tokenConfigurations);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = tokenConfigurations.Issuer,
+                    ValidAudience = tokenConfigurations.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenConfigurations.Secret))
+                };
+            });
+
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
+
+            services.AddCors(options => options.AddDefaultPolicy(builder =>
+            {
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }));
 
             services.AddControllers();
 
@@ -80,8 +129,15 @@ namespace RestNET5
                 });
             });
 
+            //Dependency Injection
             services.AddScoped<IPersonBusiness, PersonBusiness>();
             services.AddScoped<IBookBusiness, BookBusiness>();
+            services.AddScoped<ILoginBusiness, LoginBusiness>();
+
+            services.AddTransient<ITokenService, TokenService>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
 
             services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         }
@@ -106,7 +162,7 @@ namespace RestNET5
             });
 
             RewriteOptions option = new RewriteOptions();
-            option.AddRedirect("^$","swagger");
+            option.AddRedirect("^$", "swagger");
             app.UseRewriter(option);
 
             app.UseAuthorization();

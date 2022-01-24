@@ -14,5 +14,7 @@ namespace RestNET5.Models
         public string Address { get; set; }
         [Column("gender")]
         public string Gender { get; set; }
+        [Column("enabled")]
+        public bool Enabled { get; set; }
     }
 }
