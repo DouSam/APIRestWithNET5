@@ -9,6 +9,8 @@ namespace RestNET5.Repository
         T Create(T item);
         T FindByID(long id);
         List<T> FindAll();
+        List<T> FindWithPagedSearch(string query);
+        int GetCount(string query);
         T Update(T item);
         void Delete(long id);
         bool Exists(long id);

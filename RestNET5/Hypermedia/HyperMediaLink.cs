@@ -1,17 +1,21 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RestNET5.Hypermedia
 {
     public class HyperMediaLink
     {
         public string Rel { get; set; }
-
+        
         private string href;
         public string Href
         {
             get
             {
-                object _lock = new();
+                object _lock = new object();
                 lock (_lock)
                 {
                     StringBuilder sb = new StringBuilder(href);
